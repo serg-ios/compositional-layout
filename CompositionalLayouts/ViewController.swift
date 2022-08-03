@@ -36,15 +36,15 @@ class ViewController: UICollectionViewController {
     init() {
         super.init(collectionViewLayout: {
             let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1),
+                widthDimension: .fractionalWidth(1/2),
                 heightDimension: .fractionalHeight(1)
             )
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             item.contentInsets = .init(
-                top: 2,
-                leading: 16,
-                bottom: 2,
-                trailing: 16
+                top: 1,
+                leading: 1,
+                bottom: 1,
+                trailing: 1
             )
             let groupSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
