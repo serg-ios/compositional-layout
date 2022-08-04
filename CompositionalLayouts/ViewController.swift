@@ -27,8 +27,9 @@ class ViewController: UICollectionViewController {
         self.collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell_id")
         
         var snapshot = Snapshot()
-        snapshot.appendSections([0])
-        snapshot.appendItems([0, 1, 2, 3])
+        snapshot.appendSections([0, 1])
+        snapshot.appendItems([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], toSection: 0)
+        snapshot.appendItems([13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], toSection: 1)
         
         self.dataSource.apply(snapshot, animatingDifferences: false)
     }
@@ -61,10 +62,45 @@ class ViewController: UICollectionViewController {
                 heightDimension: .fractionalWidth(2/9)
             ), subitems: [tripletItem, tripletItem, tripletItem])
             
+            let trailingItem = NSCollectionLayoutItem(layoutSize: .init(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalHeight(1/2)
+            ))
+            trailingItem.contentInsets = .init(
+                top: 1,
+                leading: 1,
+                bottom: 1,
+                trailing: 1
+            )
+            let trailingGroup = NSCollectionLayoutGroup.vertical(layoutSize: .init(
+                widthDimension: .fractionalWidth(1/3),
+                heightDimension: .fractionalHeight(1)
+            ), subitems: [trailingItem, trailingItem])
+            
+            let leadingItem = NSCollectionLayoutItem(layoutSize: .init(
+                widthDimension: .fractionalWidth(2/3),
+                heightDimension: .fractionalHeight(1)
+            ))
+            leadingItem.contentInsets = .init(
+                top: 1,
+                leading: 1,
+                bottom: 1,
+                trailing: 1
+            )
+            let differentSizesGroup = NSCollectionLayoutGroup.horizontal(layoutSize: .init(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalWidth(4/9)
+            ), subitems: [leadingItem, trailingGroup])
+            
+            let differentSizesGroupReversed = NSCollectionLayoutGroup.horizontal(layoutSize: .init(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalWidth(4/9)
+            ), subitems: [trailingGroup, leadingItem])
+            
             let totalGroup = NSCollectionLayoutGroup.vertical(layoutSize: .init(
                 widthDimension: .fractionalWidth(1),
-                heightDimension: .fractionalWidth(8/9)
-            ), subitems: [individualItem, tripletGroup])
+                heightDimension: .fractionalWidth(18/9)
+            ), subitems: [individualItem, tripletGroup, differentSizesGroup, differentSizesGroupReversed, tripletGroup])
             
             return UICollectionViewCompositionalLayout(section: .init(group: totalGroup))
         }())
