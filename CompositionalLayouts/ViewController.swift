@@ -35,26 +35,38 @@ class ViewController: UICollectionViewController {
 
     init() {
         super.init(collectionViewLayout: {
-            let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1/2),
-                heightDimension: .fractionalHeight(1)
-            )
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            item.contentInsets = .init(
+            let individualItem = NSCollectionLayoutItem(layoutSize: .init(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalWidth(2/3)
+            ))
+            individualItem.contentInsets = .init(
                 top: 1,
                 leading: 1,
                 bottom: 1,
                 trailing: 1
             )
-            let groupSize = NSCollectionLayoutSize(
+            
+            let tripletItem = NSCollectionLayoutItem(layoutSize: .init(
+                widthDimension: .fractionalWidth(1/3),
+                heightDimension: .fractionalHeight(1)
+            ))
+            tripletItem.contentInsets = .init(
+                top: 1,
+                leading: 1,
+                bottom: 1,
+                trailing: 1
+            )
+            let tripletGroup = NSCollectionLayoutGroup.horizontal(layoutSize: .init(
                 widthDimension: .fractionalWidth(1),
-                heightDimension: .fractionalWidth(2/3)
-            )
-            let group = NSCollectionLayoutGroup.horizontal(
-                layoutSize: groupSize,
-                subitems: [item]
-            )
-            return UICollectionViewCompositionalLayout(section: .init(group: group))
+                heightDimension: .fractionalWidth(2/9)
+            ), subitems: [tripletItem, tripletItem, tripletItem])
+            
+            let totalGroup = NSCollectionLayoutGroup.vertical(layoutSize: .init(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalWidth(8/9)
+            ), subitems: [individualItem, tripletGroup])
+            
+            return UICollectionViewCompositionalLayout(section: .init(group: totalGroup))
         }())
     }
     
