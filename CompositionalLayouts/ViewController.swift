@@ -17,6 +17,29 @@ class ViewController: UICollectionViewController {
         return cell
     }
     
+    private lazy var supplementaryViewProvider: DataSource.SupplementaryViewProvider = { (collectionView, kind, indexPath) -> UICollectionReusableView? in
+        if kind == "badge_kind" {
+            let reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "badge_id", for: indexPath)
+            reusableView.backgroundColor = .lightGray
+            reusableView.isHidden = indexPath.section > 0
+            return reusableView
+        } else if kind == "header_kind" {
+            let reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header_id", for: indexPath)
+            let label = UILabel()
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.font = .preferredFont(forTextStyle: .largeTitle)
+            label.text = "HEADER"
+            label.textColor = .label
+            reusableView.addSubview(label)
+            label.topAnchor.constraint(equalTo: reusableView.topAnchor).isActive = true
+            label.leadingAnchor.constraint(equalTo: reusableView.leadingAnchor).isActive = true
+            label.trailingAnchor.constraint(equalTo: reusableView.trailingAnchor).isActive = true
+            label.bottomAnchor.constraint(equalTo: reusableView.bottomAnchor).isActive = true
+            return reusableView
+        }
+        return nil
+    }
+    
     private lazy var dataSource: DataSource = {
         return DataSource(collectionView: self.collectionView, cellProvider: self.cellProvider)
     }()
@@ -25,6 +48,10 @@ class ViewController: UICollectionViewController {
         super.viewDidLoad()
         
         self.collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell_id")
+        self.collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: "badge_kind", withReuseIdentifier: "badge_id")
+        self.collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: "header_kind", withReuseIdentifier: "header_id")
+        
+        self.dataSource.supplementaryViewProvider = self.supplementaryViewProvider
         
         var snapshot = Snapshot()
         snapshot.appendSections([0, 1])
@@ -36,10 +63,15 @@ class ViewController: UICollectionViewController {
 
     init() {
         super.init(collectionViewLayout: {
+            let badge = NSCollectionLayoutSupplementaryItem(layoutSize: .init(
+                widthDimension: .fractionalWidth(1/20),
+                heightDimension: .fractionalWidth(1/20)
+            ), elementKind: "badge_kind", containerAnchor: .init(edges: [.top, .trailing], fractionalOffset: .init(x: -1, y: 1)))
+
             let individualItem = NSCollectionLayoutItem(layoutSize: .init(
                 widthDimension: .fractionalWidth(1),
                 heightDimension: .fractionalWidth(2/3)
-            ))
+            ), supplementaryItems: [badge])
             individualItem.contentInsets = .init(
                 top: 1,
                 leading: 1,
@@ -102,7 +134,15 @@ class ViewController: UICollectionViewController {
                 heightDimension: .fractionalWidth(18/9)
             ), subitems: [individualItem, tripletGroup, differentSizesGroup, differentSizesGroupReversed, tripletGroup])
             
-            return UICollectionViewCompositionalLayout(section: .init(group: totalGroup))
+            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .estimated(44)
+            ), elementKind: "header_kind", alignment: .top)
+            
+            let section = NSCollectionLayoutSection(group: totalGroup)
+            section.boundarySupplementaryItems = [header]
+            
+            return UICollectionViewCompositionalLayout(section: section)
         }())
     }
     
